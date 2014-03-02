@@ -29,9 +29,12 @@ class PostController extends \BaseController
         $path = $category.'/'.$postName;
         $post = $this->post->getPost($path);
 
+        $titlePrefix = \Config::get('lablog::title_prefix');
+
         return \View::make('lablog::default.post', array(
-            'title' => $post->title,
+            'title' => $titlePrefix.' | '.$post->title,
             'content' => $post->content(),
+            'post' => $post
         ));
     }
 }

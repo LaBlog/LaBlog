@@ -20,7 +20,7 @@ class Post
     {
         if (isset($this->config->{$name})) {
             return $this->config->{$name};
-        } elseif ($this->{$name}) {
+        } elseif (isset($this->{$name})) {
             return $this->{$name};
         }
     }
