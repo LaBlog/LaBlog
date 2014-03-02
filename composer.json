@@ -1,6 +1,6 @@
 {
     "name": "lablog/lablog",
-    "description": "",
+    "description": "A simple but powerful blogging platform built on Laravel 4.",
     "authors": [
         {
             "name": "Joseph Ralph",
@@ -9,14 +9,17 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.1.*"
+        "illuminate/support": "4.1.*",
+        "michelf/php-markdown": "1.4.0"
     },
     "autoload": {
         "classmap": [
-            "src/migrations"
+            "src/migrations",
+            "src/controllers"
         ],
         "psr-0": {
-            "Lablog\\Lablog\\": "src/"
+            "Lablog\\Lablog\\": "src/",
+            "Lablog\\Lablog\\Controllers": "src/controllers"
         }
     },
     "minimum-stability": "stable"

@@ -19,6 +19,19 @@ class LablogServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('lablog/lablog');
+		$this->app['config']->package('lablog/lablog', __DIR__.'/../../config');
+
+		$mode = \Config::get('lablog::mode');
+
+		$postMode = 'Lablog\Lablog\Post\\'.ucfirst($mode).'Post';
+
+		$this->app['lablog'] = function() use ($postMode) {
+			return (object) array(
+				'post' => new $postMode,
+			);
+		};
+
+		include __DIR__.'/../../routes.php';
 	}
 
 	/**
@@ -28,7 +41,7 @@ class LablogServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+
 	}
 
 	/**
