@@ -16,7 +16,7 @@ class FilePost implements PostInterface
     public function getPost($post)
     {
         $this->path = $post;
-        $file = app_path().'/lablog/'.$post.'.post';
+        $file = app_path().'/lablog/'.$post.'.md';
 
         $file = str_replace('/', DIRECTORY_SEPARATOR, $file);
 
@@ -45,11 +45,15 @@ class FilePost implements PostInterface
     private function getConfig()
     {
         $pattern = '/-POST CONFIG-(.*?)-POST CONFIG-/s';
-        preg_match($pattern, $this->post, $matches);
+        $match = preg_match($pattern, $this->post, $matches);
 
-        $this->getContent($matches[0]);
+        if ($match) {
+            $this->getContent($matches[0]);
 
-        return json_decode($matches[1]);
+            return json_decode($matches[1]);
+        } else {
+            $this->getContent();
+        }
     }
 
     /**
@@ -57,7 +61,7 @@ class FilePost implements PostInterface
      * @param  string $config The config in the post file to ignore.
      * @return void
      */
-    private function getContent($config)
+    private function getContent($config = '')
     {
         $content = str_replace($config, '', $this->post);
 

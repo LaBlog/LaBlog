@@ -22,6 +22,17 @@ return array(
     'pages' => array(
         'about',
         'contact'
-    )
+    ),
+
+    /**
+     * Select a theme for the blog.
+     */
+    'theme' => 'default',
+
+    /**
+     * A prefix for the title.
+     * Example: LaBlog (Would set the page title as 'LaBlog | Post Name')
+     */
+    'title_prefix' => 'LaBlog'
 
 );

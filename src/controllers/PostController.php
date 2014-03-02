@@ -29,6 +29,9 @@ class PostController extends \BaseController
         $path = $category.'/'.$postName;
         $post = $this->post->getPost($path);
 
-        
+        return \View::make('lablog::default.post', array(
+            'title' => $post->title,
+            'content' => $post->content(),
+        ));
     }
 }
