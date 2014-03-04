@@ -2,92 +2,50 @@
 
 namespace Lablog\Lablog\Post;
 
-class FilePost implements PostInterface
+class FilePost implements PostGatewayInterface
 {
-    private $post;
-    private $file;
-    private $content;
+    private $fs;
 
     /**
-     * Get a specified post.
-     * @param  string $post
-     * @return Post
+     * Inject the laravel filesystem.
+     * @param IlluminateFilesystemFilesystem $fs
      */
-    public function getPost($post)
+    public function __construct(\Illuminate\Filesystem\Filesystem $fs)
     {
-        $this->path = $post;
-        $file = app_path().'/lablog/'.$post.'.md';
+        $this->fs = $fs;
+    }
 
-        $file = str_replace('/', DIRECTORY_SEPARATOR, $file);
-
-        $this->file = $file;
-
-        if (file_exists($file)) {
-            $post = file_get_contents($file);
-            $this->post = $post;
-
-            $post = new Post();
-            $post->config = $this->getConfig();
-            $post->title = $this->getTitle();
-            $post->updated = $this->getDate();
-            $post->content = $this->content;
-
-            return $post;
+    /**
+     * Check that a post exists.
+     * @param  string $path
+     * @return boolean
+     */
+    public function exists($path)
+    {
+        if ($this->fs->exists($path)) {
+            return true;
         }
 
-        return new Post();
+        return false;
     }
 
     /**
-     * Get the config of a post file.
-     * @return StdClass
-     */
-    private function getConfig()
-    {
-        $pattern = '/-POST CONFIG-(.*?)-POST CONFIG-/s';
-        $match = preg_match($pattern, $this->post, $matches);
-
-        if ($match) {
-            $this->getContent($matches[0]);
-
-            return json_decode($matches[1]);
-        } else {
-            $this->getContent();
-        }
-    }
-
-    /**
-     * Get the content from a post file.
-     * @param  string $config The config in the post file to ignore.
-     * @return void
-     */
-    private function getContent($config = '')
-    {
-        $content = str_replace($config, '', $this->post);
-
-        $this->content = $content;
-    }
-
-    /**
-     * Get the title of a post from the post name.
+     * Get the full contents of a post.
+     * @param  string $path
      * @return string
      */
-    private function getTitle()
+    public function get($path)
     {
-        $pathItems = explode('/', $this->path);
-        $title = end($pathItems);
-
-        return $title;
+        return $this->fs->get($path);
     }
 
     /**
-     * Get the modified date of the post.
+     * Get the last time the post was modified.
+     * @param string $path
      * @return string
      */
-    private function getDate()
+    public function modified($path)
     {
-        $date = filectime($this->file);
-
-        return $date;
+        return $this->fs->lastModified($path);
     }
 }

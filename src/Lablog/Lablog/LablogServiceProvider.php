@@ -21,15 +21,8 @@ class LablogServiceProvider extends ServiceProvider {
 		$this->package('lablog/lablog');
 		$this->app['config']->package('lablog/lablog', __DIR__.'/../../config');
 
-		$mode = \Config::get('lablog::mode');
-
-		$postMode = 'Lablog\Lablog\Post\\'.ucfirst($mode).'Post';
-
-		$this->app['lablog'] = function() use ($postMode) {
-			return (object) array(
-				'post' => new $postMode,
-			);
-		};
+		$this->registerPost();
+		$this->registerPostConfig();
 
 		include __DIR__.'/../../routes.php';
 	}
@@ -52,6 +45,32 @@ class LablogServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return array();
+	}
+
+	/**
+	 * Register the required post object.
+	 * @return void
+	 */
+	private function registerPost()
+	{
+		$mode = \Config::get('lablog::mode');
+
+		$postGateway = 'Lablog\Lablog\Post\\'.ucfirst($mode).'Post';
+
+		\App::bind('Lablog\Lablog\Post\PostGatewayInterface', $postGateway);
+	}
+
+	/**
+	 * Register the required post config object.
+	 * @return void
+	 */
+	private function registerPostConfig()
+	{
+		$mode = \Config::get('lablog::post.configMode') ?: 'json';
+
+		$postConfigGateway = 'Lablog\Lablog\Post\\'.ucfirst($mode).'PostConfig';
+
+		\App::bind('Lablog\Lablog\Post\PostConfigGatewayInterface', $postConfigGateway);
 	}
 
 }

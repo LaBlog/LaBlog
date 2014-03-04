@@ -11,7 +11,7 @@ return array(
 
     /**
      * Set the module to use Lablog as.
-     * Options: file, database
+     * Options: file, eloquent
      */
     'mode' => 'file',
 
@@ -28,11 +28,5 @@ return array(
      * Select a theme for the blog.
      */
     'theme' => 'default',
-
-    /**
-     * A prefix for the title.
-     * Example: LaBlog (Would set the page title as 'LaBlog | Post Name')
-     */
-    'title_prefix' => 'LaBlog'
 
 );
