@@ -7,6 +7,11 @@ If anyone would be interested to learn more about the project or would be intere
 
 Please stay tuned for updates!
 
+Looking for Developers
+----------------------
+
+Interested on working on constributing to this project? Feel free to drop me an email and let me know. Or stay tuned for the alpha or beta releases to join in.
+
 Install
 -------
 
@@ -29,3 +34,7 @@ ToDo
 - Create 'pass-to-template' system to register plugins in service provider and pass an object into the specified template.
 - Create lablog/stringy to adapt stringy/stringy to be passed into twig template.
     - Look into twig extensions for stringy adaption.
+- Add options to change content processor.
+    - Markdown
+    - HTML
+    - Change processor using `{POSTCONFIG}` section.
