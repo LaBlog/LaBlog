@@ -48,4 +48,14 @@ class FilePost implements PostGatewayInterface
     {
         return $this->fs->lastModified($path);
     }
+
+    /**
+     * Get all files from the blog of specified category.
+     * @param  string $path
+     * @return string
+     */
+    public function getAll($path)
+    {
+        return $this->fs->allFiles($path);
+    }
 }

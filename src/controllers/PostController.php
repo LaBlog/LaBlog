@@ -75,24 +75,6 @@ class PostController extends \BaseController
             $template = \Config::get('lablog::theme');
             $extra = \Config::get('lablog::extra.post');
 
-            $results = array();
-
-            foreach ($config->call as $call) {
-                $class = $call->call;
-                $params = $call->params;
-
-                $item = explode('.', $params[0]);
-                unset($params[0]);
-
-                $paramaters[] = ${$item[0]}->{$item[1]};
-
-                $params = array_merge($paramaters, $params);
-
-                $result = call_user_func_array($class, $params);
-
-                $results[$call->name] = $result;
-            }
-
             return \View::make('lablog::themes.'.$template.'.post', array(
                 'post' => $post,
                 'extra' => $extra,
@@ -100,12 +82,11 @@ class PostController extends \BaseController
                     return function($name) {
                         echo ucfirst($name);
                     };
-                },
-                'results' => $results
+                }
             ));
 
         } else {
-
+            return \App::abort(404, 'Post not found.');
         }
     }
 }

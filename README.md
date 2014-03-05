@@ -15,6 +15,17 @@ Add following service providers to laravel 4 app config.
 ```php
 ...
 'Lablog\Lablog\LablogServiceProvider',
-'Conarwelsh\MustacheL4\MustacheL4ServiceProvider'
+'TwigBridge\TwigServiceProvider'
 ...
 ```
+
+Create folder in app directory.
+
+`app/lablog`
+
+ToDo
+----
+
+- Create 'pass-to-template' system to register plugins in service provider and pass an object into the specified template.
+- Create lablog/stringy to adapt stringy/stringy to be passed into twig template.
+    - Look into twig extensions for stringy adaption.

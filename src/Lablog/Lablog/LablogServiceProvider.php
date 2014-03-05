@@ -24,6 +24,8 @@ class LablogServiceProvider extends ServiceProvider {
 		$this->registerPost();
 		$this->registerPostConfig();
 
+		\Config::set('twigbridge::twig.autoescape', false);
+
 		include __DIR__.'/../../routes.php';
 	}
 
