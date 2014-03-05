@@ -1,8 +1,8 @@
 <?php
 
-namespace Lablog\Lablog\Post;
+namespace Lablog\Lablog\Page;
 
-class JsonPostConfig implements PostConfigGatewayInterface
+class JsonPageConfig implements PageConfigGatewayInterface
 {
     public function __construct()
     {
@@ -10,24 +10,24 @@ class JsonPostConfig implements PostConfigGatewayInterface
     }
 
     /**
-     * Strip the config from the post and return the config and content
+     * Strip the config from the page and return the config and content
      * in an array.
      * @param  string $postContent
      * @param  string $wrap
      * @return array
      */
-    public function strip($postContent, $wrap)
+    public function strip($pageContent, $wrap)
     {
         $pattern = '/'.$wrap.'(.*?)'.$wrap.'/s';
-        $match = preg_match($pattern, $postContent, $matches);
+        $match = preg_match($pattern, $pageContent, $matches);
 
         if ($match) {
-            $post['config'] = $matches[1];
-            $post['content'] = str_replace($matches[0], '', $postContent);
-            return $post;
+            $page['config'] = $matches[1];
+            $page['content'] = str_replace($matches[0], '', $pageContent);
+            return $page;
         }
 
-        return array('config' => '', 'content' => $postContent);
+        return array('config' => '', 'content' => $pageContent);
     }
 
     /**

@@ -37,4 +37,3 @@ ToDo
 - Add options to change content processor.
     - Markdown
     - HTML
-    - Change processor using `{POSTCONFIG}` section.

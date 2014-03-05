@@ -5,15 +5,19 @@ namespace Lablog\Lablog\Controllers;
 use Lablog\Lablog\Post\PostGatewayInterface;
 use Lablog\Lablog\Post\PostConfigGatewayInterface;
 use Lablog\Lablog\Post\Post;
+use Lablog\Lablog\Processor\ProcessorInterface;
 use Stringy\StringyStatic as Stringy;
-use Michelf\MarkdownExtra as Markdown;
 
 class PostController extends \BaseController
 {
-    public function __construct(PostGatewayInterface $post, PostConfigGatewayInterface $postConfig)
+    public function __construct(
+        PostGatewayInterface $post,
+        PostConfigGatewayInterface $postConfig,
+        ProcessorInterface $processor)
     {
         $this->post = $post;
         $this->postConfig = $postConfig;
+        $this->processor = $processor;
     }
 
     /**
@@ -35,7 +39,7 @@ class PostController extends \BaseController
         $ds = DIRECTORY_SEPARATOR;
         $postPath = str_replace('/', $ds, $category.'/'.$postName);
 
-        $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.md';
+        $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
 
         if ($this->post->exists($fullPostPath)) {
             $postContent = $this->post->get($fullPostPath);
@@ -64,29 +68,25 @@ class PostController extends \BaseController
                 $modified = $this->post->modified($fullPostPath);
             }
 
-            $path = $fullPostPath;
-
             $post = new Post;
             $post->name = $name;
             $post->modified = $modified;
-            $post->content = Markdown::defaultTransform($content);
-            $post->path = $path;
+            $post->content = $this->processor->process($content);
+            $post->path = $fullPostPath;
 
             $template = \Config::get('lablog::theme');
             $extra = \Config::get('lablog::extra.post');
 
             return \View::make('lablog::themes.'.$template.'.post', array(
                 'post' => $post,
-                'extra' => $extra,
-                'string' => function() {
-                    return function($name) {
-                        echo ucfirst($name);
-                    };
-                }
+                'config' => $config,
+                'extra' => $extra
             ));
 
         } else {
-            return \App::abort(404, 'Post not found.');
+            $extra = \Config::get('lablog::extra.post');
+            $message = isset($extra['notFound']) ? $extra['notFound'] : 'Post not found.';
+            return \App::abort(404, $message);
         }
     }
 }

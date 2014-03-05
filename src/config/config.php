@@ -7,7 +7,7 @@ return array(
      * Default: '/' (Eg. domain.com will go to your blog home.)
      * Example: '/blog' (Eg. domain.com/blog will go to your blog home.)
      */
-    'prefix' => 'blog',
+    'prefix' => '/',
 
     /**
      * Set the module to use Lablog as.

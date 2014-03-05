@@ -8,14 +8,14 @@ return array(
      */
     'post' => array(
         'titlePrefix' => 'LaBlog',
-        '404' => 'Sorry, the post you are looking for could not be found.'
+        'notFound' => 'Sorry, the post you are looking for could not be found.'
     ),
 
     /**
      * Extra values to pass info the page template.
      */
     'page' => array(
-
+        'titlePrefix' => 'LaBlog'
     )
 
 );

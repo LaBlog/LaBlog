@@ -1,10 +1,10 @@
 <?php
 
-namespace Lablog\Lablog\Post;
+namespace Lablog\Lablog\Page;
 
-class FilePost implements PostGatewayInterface
+class FilePage implements PageGatewayInterface
 {
-    public $fs;
+    private $fs;
 
     /**
      * Inject the laravel filesystem.
@@ -16,7 +16,7 @@ class FilePost implements PostGatewayInterface
     }
 
     /**
-     * Check that a post exists.
+     * Check that a page exists.
      * @param  string $path
      * @return boolean
      */
@@ -30,7 +30,7 @@ class FilePost implements PostGatewayInterface
     }
 
     /**
-     * Get the full contents of a post.
+     * Get the full contents of a page.
      * @param  string $path
      * @return string
      */
@@ -40,22 +40,12 @@ class FilePost implements PostGatewayInterface
     }
 
     /**
-     * Get the last time the post was modified.
+     * Get the last time the page was modified.
      * @param string $path
      * @return string
      */
     public function modified($path)
     {
         return $this->fs->lastModified($path);
-    }
-
-    /**
-     * Get all files from the blog of specified category.
-     * @param  string $path
-     * @return string
-     */
-    public function getAll($path)
-    {
-        return $this->fs->files($path);
     }
 }

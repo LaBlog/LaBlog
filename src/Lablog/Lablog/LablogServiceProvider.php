@@ -1,4 +1,6 @@
-<?php namespace Lablog\Lablog;
+<?php
+
+namespace Lablog\Lablog;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +23,9 @@ class LablogServiceProvider extends ServiceProvider {
 		$this->package('lablog/lablog');
 		$this->app['config']->package('lablog/lablog', __DIR__.'/../../config');
 
+		$this->registerProcessor();
+		$this->registerPage();
+		$this->registerPageConfig();
 		$this->registerPost();
 		$this->registerPostConfig();
 
@@ -47,6 +52,40 @@ class LablogServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return array();
+	}
+
+	/**
+	 * Register the processor to use on content.
+	 * @return void
+	 */
+	private function registerProcessor()
+	{
+		\App::bind(
+			'Lablog\Lablog\Processor\ProcessorInterface',
+			'Lablog\Lablog\Processor\MarkdownProcessor'
+		);
+	}
+
+	/**
+	 * Register the required page type.
+	 * @return void
+	 */
+	private function registerPage()
+	{
+		$mode = \Config::get('lablog::mode');
+
+		$pageGateway = 'Lablog\Lablog\Page\\'.ucfirst($mode).'Page';
+
+		\App::bind('Lablog\Lablog\Page\PageGatewayInterface', $pageGateway);
+	}
+
+	private function registerPageConfig()
+	{
+		$mode = \Config::get('lablog::page.configMode') ?: 'json';
+
+		$pageConfigGateway = 'Lablog\Lablog\Page\\'.ucfirst($mode).'PageConfig';
+
+		\App::bind('Lablog\Lablog\Page\PageConfigGatewayInterface', $pageConfigGateway);
 	}
 
 	/**
