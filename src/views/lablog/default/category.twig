@@ -5,20 +5,9 @@
     <title>Test</title>
 </head>
 <body>
-    {% for post in posts %}
-        {{ post.name | title }} | {{ post.url }}
+    {% for post in posts | paginate(pageNumber, 10) %}
+        {{ post.name }}
     {% endfor %}
-
-    {{ 'Camel-Case' | camelize }}
-
-    {% set list = 'String' %}
-    {% for item in list | chars %}
-        {{ item }}
-    {% endfor %}
-
-    {{ '    Collapse    White     Space' | collapseWhitespace }}
-
-    {{ 'underscore this' | upperCaseFirst }}
 
 
 </body>

@@ -19,7 +19,7 @@ class CategoryController extends \BaseController
      * @param  string $category The category to show.
      * @return \View
      */
-    public function showCategory($category)
+    public function showCategory($category, $pagenumber = 1)
     {
         $ds = DIRECTORY_SEPARATOR;
         $categoryPath = str_replace('/', $ds, $category);
@@ -72,7 +72,8 @@ class CategoryController extends \BaseController
         return \View::make($theme.'.category', array(
             'posts' => $allPosts,
             'parent' => $parentCategory,
-            'path' => $category
+            'path' => $category,
+            'pageNumber' => $pagenumber
         ));
     }
 }

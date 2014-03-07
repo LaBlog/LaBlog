@@ -28,6 +28,7 @@ class LablogServiceProvider extends ServiceProvider {
 		$this->registerPageConfig();
 		$this->registerPost();
 		$this->registerPostConfig();
+		$this->registerTwigModules();
 
 		\Config::set('twigbridge::twig.autoescape', false);
 
@@ -52,6 +53,19 @@ class LablogServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return array();
+	}
+
+	/**
+	 * Register twig modules.
+	 * @return void
+	 */
+	public function registerTwigModules()
+	{
+		$twig = \Config::get('twigbridge::extensions');
+
+		$twig[] = 'Lablog\Lablog\Twig\PaginationLoader';
+
+		\Config::set('twigbridge::extensions', $twig);
 	}
 
 	/**

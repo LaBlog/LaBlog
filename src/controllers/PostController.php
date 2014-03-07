@@ -24,7 +24,7 @@ class PostController extends \BaseController
      * Show all of the posts.
      * @return \View
      */
-    public function showPosts()
+    public function showPosts($pageNumber = 1)
     {
         echo 'All posts.';
     }
