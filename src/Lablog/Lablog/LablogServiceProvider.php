@@ -28,6 +28,7 @@ class LablogServiceProvider extends ServiceProvider {
 		$this->registerPageConfig();
 		$this->registerPost();
 		$this->registerPostConfig();
+		$this->registerCategory();
 		$this->registerTwigModules();
 
 		\Config::set('twigbridge::twig.autoescape', false);
@@ -64,6 +65,7 @@ class LablogServiceProvider extends ServiceProvider {
 		$twig = \Config::get('twigbridge::extensions');
 
 		$twig[] = 'Lablog\Lablog\Twig\PaginationLoader';
+		$twig[] = 'Lablog\Lablog\Twig\CategoryLoader';
 
 		\Config::set('twigbridge::extensions', $twig);
 	}
@@ -126,6 +128,15 @@ class LablogServiceProvider extends ServiceProvider {
 		$postConfigGateway = 'Lablog\Lablog\Post\\'.ucfirst($mode).'PostConfig';
 
 		\App::bind('Lablog\Lablog\Post\PostConfigGatewayInterface', $postConfigGateway);
+	}
+
+	private function registerCategory()
+	{
+		$mode = \Config::get('lablog::mode');
+
+		$postConfigGateway = 'Lablog\Lablog\Category\\'.ucfirst($mode).'Category';
+
+		\App::bind('Lablog\Lablog\Category\CategoryGatewayInterface', $postConfigGateway);
 	}
 
 }

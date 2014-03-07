@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Posts</title>
+</head>
+<body>
+    {% for post in posts %}
+        {{ post.name }}  {{ post.url }}
+        <br>
+    {% endfor %}
+</body>
+</html>

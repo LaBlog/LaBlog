@@ -5,6 +5,7 @@ namespace Lablog\Lablog\Controllers;
 use Lablog\Lablog\Post\PostGatewayInterface;
 use Lablog\Lablog\Post\PostConfigGatewayInterface;
 use Lablog\Lablog\Post\Post;
+use Lablog\Lablog\Category\CategoryGatewayInterface;
 use Lablog\Lablog\Processor\ProcessorInterface;
 use Stringy\StringyStatic as Stringy;
 
@@ -13,20 +14,29 @@ class PostController extends \BaseController
     public function __construct(
         PostGatewayInterface $post,
         PostConfigGatewayInterface $postConfig,
-        ProcessorInterface $processor)
+        ProcessorInterface $processor,
+        CategoryGatewayInterface $category)
     {
         $this->post = $post;
         $this->postConfig = $postConfig;
         $this->processor = $processor;
+        $this->category = $category;
     }
 
     /**
      * Show all of the posts.
      * @return \View
      */
-    public function showPosts($pageNumber = 1)
+    public function showPosts($pagenumber = 1)
     {
-        echo 'All posts.';
+        $posts = $this->post->findAll();
+
+        $theme = \Config::get('lablog::theme');
+
+        return \View::make($theme.'.posts', array(
+            'posts' => $posts,
+            'pageNumber' => $pagenumber,
+        ));
     }
 
     /**
@@ -74,13 +84,16 @@ class PostController extends \BaseController
             $post->content = $this->processor->process($content);
             $post->path = $fullPostPath;
 
+            $fullCategory = $this->category->getCategory($category);
+
             $template = \Config::get('lablog::theme');
             $extra = \Config::get('lablog::extra.post');
 
             return \View::make($template.'.post', array(
                 'post' => $post,
                 'config' => $config,
-                'extra' => $extra
+                'extra' => $extra,
+                'category' => $fullCategory
             ));
 
         } else {

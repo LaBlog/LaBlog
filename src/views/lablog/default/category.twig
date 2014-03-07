@@ -5,8 +5,14 @@
     <title>Test</title>
 </head>
 <body>
-    {% for post in posts | paginate(pageNumber, 10) %}
-        {{ post.name }}
+    {% for post in category.posts | paginate(pageNumber, 10) %}
+        {{ post.name }} {{ post.parent.url }}
+    {% endfor %}
+
+    {% set sub = getSubCategories(category.link) %}
+
+    {% for category in sub %}
+        {{ category.name }}
     {% endfor %}
 
 
