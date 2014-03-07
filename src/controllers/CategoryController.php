@@ -69,7 +69,7 @@ class CategoryController extends \BaseController
 
         $theme = \Config::get('lablog::theme');
 
-        return \View::make('lablog::themes.'.$theme.'.category', array(
+        return \View::make($theme.'.category', array(
             'posts' => $allPosts,
             'parent' => $parentCategory,
             'path' => $category

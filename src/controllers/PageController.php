@@ -69,7 +69,7 @@ class PageController extends \BaseController
 
             $templateFile = $pageName == 'index' ? 'home' : 'page';
 
-            return \View::make('lablog::themes.'.$template.'.'.$templateFile, array(
+            return \View::make($template.'.'.$templateFile, array(
                 'page' => $page,
                 'config' => $config,
                 'extra' => $extra

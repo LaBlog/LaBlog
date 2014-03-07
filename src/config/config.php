@@ -27,6 +27,6 @@ return array(
     /**
      * Select a theme for the blog.
      */
-    'theme' => 'default',
+    'theme' => 'lablog::lablog.default',
 
 );

@@ -77,7 +77,7 @@ class PostController extends \BaseController
             $template = \Config::get('lablog::theme');
             $extra = \Config::get('lablog::extra.post');
 
-            return \View::make('lablog::themes.'.$template.'.post', array(
+            return \View::make($template.'.post', array(
                 'post' => $post,
                 'config' => $config,
                 'extra' => $extra
