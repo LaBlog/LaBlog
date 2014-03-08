@@ -9,7 +9,7 @@
         {{ post.name }} {{ post.parent.url }}
     {% endfor %}
 
-    {% set sub = getSubCategories(category.link) %}
+    {% set sub = getAllCategoryPosts(category.link) %}
 
     {% for category in sub %}
         {{ category.name }}

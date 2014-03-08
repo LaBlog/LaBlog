@@ -32,11 +32,13 @@ class CategoryController extends \BaseController
         $category->posts = $this->category->getCategoryPosts($fullCategory);
 
         $theme = \Config::get('lablog::theme');
+        $global = \Config::get('lablog::global');
 
         return \View::make($theme.'.category', array(
             'category' => $category,
             'subCategories' => $subCategories,
-            'pageNumber' => $pagenumber
+            'pageNumber' => $pagenumber,
+            'global' => $global
         ));
     }
 }

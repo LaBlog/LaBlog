@@ -10,12 +10,6 @@ return array(
     'prefix' => '/',
 
     /**
-     * Set the module to use Lablog as.
-     * Options: file, eloquent
-     */
-    'mode' => 'file',
-
-    /**
      * Add any extra blog pages you wish to have here.
      * Example: about, contact, terms_and_conditions
      */

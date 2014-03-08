@@ -87,12 +87,12 @@ class PostController extends \BaseController
             $fullCategory = $this->category->getCategory($category);
 
             $template = \Config::get('lablog::theme');
-            $extra = \Config::get('lablog::extra.post');
+            $extra = \Config::get('lablog::global');
 
             return \View::make($template.'.post', array(
                 'post' => $post,
                 'config' => $config,
-                'extra' => $extra,
+                'global' => $extra,
                 'category' => $fullCategory
             ));
 

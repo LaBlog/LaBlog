@@ -65,14 +65,14 @@ class PageController extends \BaseController
             $page->path = $fullPagePath;
 
             $template = \Config::get('lablog::theme');
-            $extra = \Config::get('lablog::extra.page');
+            $extra = \Config::get('lablog::global');
 
             $templateFile = $pageName == 'index' ? 'home' : 'page';
 
             return \View::make($template.'.'.$templateFile, array(
                 'page' => $page,
                 'config' => $config,
-                'extra' => $extra
+                'global' => $extra
             ));
 
         } else {

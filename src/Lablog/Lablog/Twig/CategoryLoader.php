@@ -13,11 +13,9 @@ class CategoryLoader extends Twig_Extension
 {
     public function __construct()
     {
-        $mode = \Config::get('lablog::mode');
+        $categoryGatewayInterface = \Config::get('lablog::bindings.Lablog\Lablog\Category\CategoryGatewayInterface');
 
-        $categoryConfigGateway = 'Lablog\Lablog\Category\\'.ucfirst($mode).'Category';
-
-        $this->category = new $categoryConfigGateway(new Filesystem);
+        $this->category = new $categoryGatewayInterface(new Filesystem);
     }
 
     public function getName()
@@ -29,13 +27,19 @@ class CategoryLoader extends Twig_Extension
     {
         return array(
             'getCategoryPosts' => new Twig_Function_Method($this, 'getCategoryPosts'),
-            'getSubCategories' => new Twig_Function_Method($this, 'getSubCategories')
+            'getSubCategories' => new Twig_Function_Method($this, 'getSubCategories'),
+            'getAllCategoryPosts' => new Twig_Function_Method($this, 'getAllCategoryPosts')
         );
     }
 
     public function getCategoryPosts($category)
     {
         return $this->category->getCategoryPosts($category);
+    }
+
+    public function getAllCategoryPosts($category)
+    {
+        return $this->category->getAllCategoryPosts($category);
     }
 
     public function getSubCategories($category)

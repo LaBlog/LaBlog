@@ -13,6 +13,11 @@ class FileCategory implements CategoryGatewayInterface
         $this->fs = $fs;
     }
 
+    /**
+     * Get a given categories sub categories.
+     * @param  string $category
+     * @return array
+     */
     public function getSubCategories($category)
     {
         $ds = DIRECTORY_SEPARATOR;
@@ -34,6 +39,11 @@ class FileCategory implements CategoryGatewayInterface
         return $allCategories;
     }
 
+    /**
+     * Get a given category information.
+     * @param  string $category
+     * @return void
+     */
     public function getCategory($category)
     {
         $ds = DIRECTORY_SEPARATOR;
@@ -73,6 +83,11 @@ class FileCategory implements CategoryGatewayInterface
         return $category;
     }
 
+    /**
+     * Get all of the posts in a category.
+     * @param  string $category
+     * @return array
+     */
     public function getCategoryPosts($category)
     {
         $ds = DIRECTORY_SEPARATOR;
@@ -81,6 +96,39 @@ class FileCategory implements CategoryGatewayInterface
         $path = app_path().$ds.'lablog'.$ds.$categoryPath;
 
         $posts = $this->fs->files($path);
+
+        $allPosts = array();
+
+        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
+
+        foreach ($posts as $post) {
+            $explodePath = explode('/', $post);
+            $postName = str_replace('.post', '', end($explodePath));
+
+            $link = $linkPrefix.'/post/'.$category.'/'.$postName;
+            $allPosts[] = array(
+                'name' => $postName,
+                'url' => \URL::to($link),
+                'link' => $category.'/'.$postName
+            );
+        }
+
+        return $allPosts;
+    }
+
+    /**
+     * Get all posts in a category, including sub categories.
+     * @param  string $category
+     * @return array
+     */
+    public function getAllCategoryPosts($category)
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $categoryPath = str_replace('/', $ds, $category);
+
+        $path = app_path().$ds.'lablog'.$ds.$categoryPath;
+
+        $posts = $this->fs->allFiles($path);
 
         $allPosts = array();
 
