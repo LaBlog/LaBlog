@@ -1,0 +1,45 @@
+{% set assets = url('/packages/lablog/lablog/') %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    {# Default site title block #}
+    {% block title %}
+        <title>
+            {{ global.title }}
+            {% if category.name %} | {{ category.name }} {% endif %}
+            {% if post.name %} | {{ post.name }} {% endif %}
+        </title>
+    {% endblock %}
+
+    {# Load stylesheets #}
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ assets }}/css/screen.css"></link>
+    {% endblock %}
+
+    {# Load header scripts #}
+    {% block header_scripts %}
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,400italic,300,300italic' rel='stylesheet' type='text/css'>
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+        <header class="main-header">
+            <section class="container">
+                <h1 class="title">{{ global.title }}</h1>
+                <nav class="main-navigation">
+                    <a href="{{ url() }}">Home</a>
+                    <a href="{{ url() }}/posts">Posts</a>
+                    <a href="{{ url() }}/categories">Categories</a>
+                </nav>
+            </section>
+        </header>
+    {% endblock %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>

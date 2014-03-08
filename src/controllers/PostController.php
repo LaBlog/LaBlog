@@ -32,10 +32,12 @@ class PostController extends \BaseController
         $posts = $this->post->findAll();
 
         $theme = \Config::get('lablog::theme');
+        $extra = \Config::get('lablog::global');
 
         return \View::make($theme.'.posts', array(
             'posts' => $posts,
             'pageNumber' => $pagenumber,
+            'global' => $extra
         ));
     }
 
@@ -51,38 +53,9 @@ class PostController extends \BaseController
 
         $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
 
-        if ($this->post->exists($fullPostPath)) {
-            $postContent = $this->post->get($fullPostPath);
+        $post = $this->post->getPost($category, $postName);
 
-            $configWrap = \Config::get('lablog::post.configWrap') ?: '{POSTCONFIG}';
-
-            $postContent = $this->postConfig->strip($postContent, $configWrap);
-
-            $config = $this->postConfig->decode($postContent['config']);
-
-            if (isset($config->title)) {
-                $name = $config->title;
-            } else {
-                $name = $postName;
-            }
-
-            if (isset($config->content)) {
-                $content = $config->content;
-            } else {
-                $content = $postContent['content'];
-            }
-
-            if (isset($config->modified)) {
-                $modified = $config->modified;
-            } else {
-                $modified = $this->post->modified($fullPostPath);
-            }
-
-            $post = new Post;
-            $post->name = $name;
-            $post->modified = $modified;
-            $post->content = $this->processor->process($content);
-            $post->path = $fullPostPath;
+        if ($post) {
 
             $fullCategory = $this->category->getCategory($category);
 
@@ -91,15 +64,17 @@ class PostController extends \BaseController
 
             return \View::make($template.'.post', array(
                 'post' => $post,
-                'config' => $config,
                 'global' => $extra,
                 'category' => $fullCategory
             ));
 
         } else {
-            $extra = \Config::get('lablog::extra.post');
-            $message = isset($extra['notFound']) ? $extra['notFound'] : 'Post not found.';
-            return \App::abort(404, $message);
+            $template = \Config::get('lablog::theme');
+            $global = \Config::get('lablog::global');
+            return \Response::view($template.'.404', array(
+                'global' => $global,
+                'error_message' => 'Sorry, the Post could not be found.'
+            ), 200);
         }
     }
 }

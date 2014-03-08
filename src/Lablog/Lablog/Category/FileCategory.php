@@ -14,6 +14,20 @@ class FileCategory implements CategoryGatewayInterface
     }
 
     /**
+     * Check if a given category exists or not.
+     * @param  string $path
+     * @return boolean
+     */
+    public function exists($path)
+    {
+        if ($this->fs->isDirectory($path)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get a given categories sub categories.
      * @param  string $category
      * @return array
@@ -26,6 +40,10 @@ class FileCategory implements CategoryGatewayInterface
         $basePath = app_path().$ds.'lablog'.$ds;
 
         $path = $basePath.$categoryPath;
+
+        if (!$this->exists($path)) {
+            return array();
+        }
 
         $categories = $this->fs->directories($path);
 
@@ -51,6 +69,10 @@ class FileCategory implements CategoryGatewayInterface
 
         $path = app_path().$ds.'lablog'.$ds.$categoryPath;
 
+        if (!$this->exists($path)) {
+            return (object) array();
+        }
+
         $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
 
         $categoryExplode = explode('/', $category);
@@ -71,13 +93,14 @@ class FileCategory implements CategoryGatewayInterface
             $parentCategory = '';
         }
 
+        $baseCategory = $category;
         $categoryLink = $linkPrefix.'/category/'.$category;
         $fullCategory = $category;
 
         $category = new Category;
         $category->parent = $parentCategory;
         $category->name = $categoryName;
-        $category->link = $fullCategory;
+        $category->link = $baseCategory;
         $category->url = \URL::to($categoryLink);
 
         return $category;
@@ -95,6 +118,10 @@ class FileCategory implements CategoryGatewayInterface
 
         $path = app_path().$ds.'lablog'.$ds.$categoryPath;
 
+        if (!$this->exists($path)) {
+            return array();
+        }
+
         $posts = $this->fs->files($path);
 
         $allPosts = array();
@@ -102,6 +129,9 @@ class FileCategory implements CategoryGatewayInterface
         $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
 
         foreach ($posts as $post) {
+            if (strpos('.post', $post) === false) {
+                continue;
+            }
             $explodePath = explode('/', $post);
             $postName = str_replace('.post', '', end($explodePath));
 
@@ -127,6 +157,10 @@ class FileCategory implements CategoryGatewayInterface
         $categoryPath = str_replace('/', $ds, $category);
 
         $path = app_path().$ds.'lablog'.$ds.$categoryPath;
+
+        if (!$this->exists($path)) {
+            return array();
+        }
 
         $posts = $this->fs->allFiles($path);
 

@@ -1,11 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ extra.titlePrefix }} | {{ page.name }}</title>
-</head>
-<body>
+{% extends 'lablog::lablog.default.layout.master' %}
+
+{% block content %}
     {{ page.content }}
-    {{ config.title }}
-</body>
-</html>
+{% endblock %}

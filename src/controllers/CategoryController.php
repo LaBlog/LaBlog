@@ -19,6 +19,31 @@ class CategoryController extends \BaseController
         $this->category = $category;
     }
 
+    public function showCategories()
+    {
+        $subCategories = $this->category->getSubCategories('');
+        foreach ($subCategories as $blogCategory) {
+            $category = $this->category->getCategory($blogCategory->link);
+            $category->posts = $this->category->getCategoryPosts($blogCategory->link);
+        }
+
+        $theme = \Config::get('lablog::theme');
+        $global = \Config::get('lablog::global');
+
+        if (!isset($category->name)) {
+            return \Response::view($theme.'.404', array(
+                'global' => $global,
+                'error_message' => 'Sorry, the Category could not be found.'
+            ), 200);
+        }
+
+        return \View::make($theme.'.category', array(
+            'category' => $category,
+            'subCategories' => $subCategories,
+            'global' => $global
+        ));
+    }
+
     /**
      * Show a category.
      * @param  string $category The category to show.
@@ -33,6 +58,13 @@ class CategoryController extends \BaseController
 
         $theme = \Config::get('lablog::theme');
         $global = \Config::get('lablog::global');
+
+        if (!isset($category->name)) {
+            return \Response::view($theme.'.404', array(
+                'global' => $global,
+                'error_message' => 'Sorry, the Category could not be found.'
+            ), 200);
+        }
 
         return \View::make($theme.'.category', array(
             'category' => $category,

@@ -13,9 +13,7 @@ class CategoryLoader extends Twig_Extension
 {
     public function __construct()
     {
-        $categoryGatewayInterface = \Config::get('lablog::bindings.Lablog\Lablog\Category\CategoryGatewayInterface');
-
-        $this->category = new $categoryGatewayInterface(new Filesystem);
+        $this->category = \App::make('Lablog\Lablog\Category\CategoryGatewayInterface');
     }
 
     public function getName()

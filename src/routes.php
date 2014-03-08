@@ -17,6 +17,7 @@ Route::pattern('page', 'page');
 Route::group(['prefix' => $prefix], function() {
     Route::get('/', 'Lablog\Lablog\Controllers\PageController@showPage');
     Route::get('posts/{page?}/{pagenumber?}', 'Lablog\Lablog\Controllers\PostController@showPosts');
+    Route::get('categories', 'Lablog\Lablog\Controllers\CategoryController@showCategories');
     Route::get('category/{categories?}/{page?}/{pagenumber}', 'Lablog\Lablog\Controllers\CategoryController@showCategory');
     Route::get('category/{categories?}', 'Lablog\Lablog\Controllers\CategoryController@showCategory');
     Route::get('{pagename}', 'Lablog\Lablog\Controllers\PageController@showPage');

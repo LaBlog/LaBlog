@@ -1,10 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ extra.titlePrefix }} | {{ page.name }}</title>
-</head>
-<body>
+{% extends 'lablog::lablog.default.layout.master' %}
+
+{% block content %}
     {{ page.content }}
-</body>
-</html>
+
+    <hr>
+
+    {% set posts = getAllPosts() %}
+
+    {% for post in posts | slice(0, 5) %}
+        {% set postData = getPost(post.category.link, post.name) %}
+        <article class="post">
+            <header>
+                <h1><a href="{{ post.url }}">{{ postData.name }}</a></h1>
+            </header>
+            <section>
+                {{ postData.config.description }}
+            </section>
+            <footer>
+                <a class="readmore" href="{{ post.url }}">Read More &hellip;</a>
+            </footer>
+        </article>
+    {% endfor %}
+{% endblock %}

@@ -16,6 +16,11 @@ return array(
      */
     'page' => array(
         'titlePrefix' => 'LaBlog'
-    )
+    ),
+
+    /**
+     * Global Site Title
+     */
+    'title' => 'LaBlog',
 
 );

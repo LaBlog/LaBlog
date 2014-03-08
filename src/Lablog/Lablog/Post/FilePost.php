@@ -10,9 +10,14 @@ class FilePost implements PostGatewayInterface
      * Inject the laravel filesystem.
      * @param IlluminateFilesystemFilesystem $fs
      */
-    public function __construct(\Illuminate\Filesystem\Filesystem $fs)
+    public function __construct(
+        \Illuminate\Filesystem\Filesystem $fs,
+        PostConfigGatewayInterface $config,
+        \Lablog\Lablog\Processor\ProcessorInterface $processor)
     {
         $this->fs = $fs;
+        $this->config = $config;
+        $this->processor = $processor;
     }
 
     /**
@@ -37,6 +42,53 @@ class FilePost implements PostGatewayInterface
     public function get($path)
     {
         return $this->fs->get($path);
+    }
+
+    public function getPost($category, $postName)
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        $postPath = str_replace('/', $ds, $category.'/'.$postName);
+
+        $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
+
+        if ($this->exists($fullPostPath)) {
+            $postContent = $this->get($fullPostPath);
+
+            $configWrap = \Config::get('lablog::post.configWrap') ?: '{POSTCONFIG}';
+
+            $postContent = $this->config->strip($postContent, $configWrap);
+
+            $config = $this->config->decode($postContent['config']);
+
+            if (isset($config->title)) {
+                $name = $config->title;
+            } else {
+                $name = $postName;
+            }
+
+            if (isset($config->content)) {
+                $content = $config->content;
+            } else {
+                $content = $postContent['content'];
+            }
+
+            if (isset($config->modified)) {
+                $modified = $config->modified;
+            } else {
+                $modified = $this->modified($fullPostPath);
+            }
+
+            $post = new Post;
+            $post->name = $name;
+            $post->modified = $modified;
+            $post->content = $this->processor->process($content);
+            $post->path = $fullPostPath;
+            $post->config = $config;
+
+            return $post;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -98,7 +150,7 @@ class FilePost implements PostGatewayInterface
             $postDetails->category = array(
                 'name' => $category,
                 'url' => \URL::to($categoryLink),
-                'link' => $categoryLink
+                'link' => $categoryPath
             );
 
             $posts[] = $postDetails;
