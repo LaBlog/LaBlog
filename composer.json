@@ -1,6 +1,8 @@
 {
     "name": "lablog/lablog",
     "description": "A simple but powerful blogging platform built on Laravel 4.",
+    "keywords": ["laravel", "blog", "lablog"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Joseph Ralph",
