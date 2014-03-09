@@ -7,7 +7,6 @@ use Twig_Function_Function;
 use Twig_Function_Method;
 use Twig_Filter_Method;
 use Twig_Extension;
-use Illuminate\Filesystem\Filesystem;
 
 class CategoryLoader extends Twig_Extension
 {
@@ -24,20 +23,14 @@ class CategoryLoader extends Twig_Extension
     public function getFunctions()
     {
         return array(
-            'getCategoryPosts' => new Twig_Function_Method($this, 'getCategoryPosts'),
+            'getCategory' => new Twig_Function_Method($this, 'getCategory'),
             'getSubCategories' => new Twig_Function_Method($this, 'getSubCategories'),
-            'getAllCategoryPosts' => new Twig_Function_Method($this, 'getAllCategoryPosts')
         );
     }
 
-    public function getCategoryPosts($category)
+    public function getCategory($category)
     {
-        return $this->category->getCategoryPosts($category);
-    }
-
-    public function getAllCategoryPosts($category)
-    {
-        return $this->category->getAllCategoryPosts($category);
+        return $this->category->getCategory($category);
     }
 
     public function getSubCategories($category)

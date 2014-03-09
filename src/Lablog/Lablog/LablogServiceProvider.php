@@ -60,8 +60,9 @@ class LablogServiceProvider extends ServiceProvider {
 		$twig = \Config::get('twigbridge::extensions');
 
 		$twig[] = 'Lablog\Lablog\Twig\PaginationLoader';
-		$twig[] = 'Lablog\Lablog\Twig\CategoryLoader';
 		$twig[] = 'Lablog\Lablog\Twig\PostLoader';
+		$twig[] = 'Lablog\Lablog\Twig\PageLoader';
+		$twig[] = 'Lablog\Lablog\Twig\CategoryLoader';
 
 		\Config::set('twigbridge::extensions', $twig);
 	}

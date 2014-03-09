@@ -1,18 +1,26 @@
 <?php
 
 namespace Lablog\Lablog\Page;
+use Lablog\Lablog\Page\PageConfigGatewayInterface;
+use Lablog\Lablog\Processor\ProcessorInterface;
 
 class FilePage implements PageGatewayInterface
 {
     private $fs;
+    private $config;
 
     /**
      * Inject the laravel filesystem.
      * @param IlluminateFilesystemFilesystem $fs
      */
-    public function __construct(\Illuminate\Filesystem\Filesystem $fs)
+    public function __construct(
+        \Illuminate\Filesystem\Filesystem $fs,
+        PageConfigGatewayInterface $config,
+        ProcessorInterface $processor)
     {
         $this->fs = $fs;
+        $this->config = $config;
+        $this->processor = $processor;
     }
 
     /**
@@ -20,8 +28,11 @@ class FilePage implements PageGatewayInterface
      * @param  string $path
      * @return boolean
      */
-    public function exists($path)
+    public function exists($pageName)
     {
+        $ds = DIRECTORY_SEPARATOR;
+        $path = app_path().$ds.'lablog'.$ds.$pageName.'.page';
+
         if ($this->fs->exists($path)) {
             return true;
         }
@@ -34,9 +45,24 @@ class FilePage implements PageGatewayInterface
      * @param  string $path
      * @return string
      */
-    public function get($path)
+    public function get($pageName)
     {
-        return $this->fs->get($path);
+        $ds = DIRECTORY_SEPARATOR;
+        $path = app_path().$ds.'lablog'.$ds.$pageName.'.page';
+
+        $pageContent = $this->fs->get($path);
+
+        $page = $this->config->strip($pageContent, '{PAGECONFIG}');
+
+        $pageObject = new Page;
+        $pageObject->name = $pageName;
+        $pageObject->modified = $this->modified($path);
+        $pageObject->content = $this->processor->process($page['content']);
+        $pageObject->config = $page['config'];
+        $pageObject->slug = $pageName;
+        $pageObject->url = \URL::to(\Config::get('lablog::config.prefix').'/'.$pageName);
+
+        return $pageObject;
     }
 
     /**

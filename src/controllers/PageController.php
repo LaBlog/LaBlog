@@ -3,21 +3,16 @@
 namespace Lablog\Lablog\Controllers;
 
 use Lablog\Lablog\Page\PageGatewayInterface;
-use Lablog\Lablog\Page\PageConfigGatewayInterface;
-use Lablog\Lablog\Page\Page;
 use Lablog\Lablog\Processor\ProcessorInterface;
-use Stringy\StringyStatic as Stringy;
 
 class PageController extends \BaseController
 {
-    public function __construct(
-        PageGatewayInterface $page,
-        PageConfigGatewayInterface $pageConfig,
-        ProcessorInterface $processor)
+    public function __construct(PageGatewayInterface $page)
     {
+        $this->theme = \Config::get('lablog::theme');
+        $this->global = \Config::get('lablog::global');
+
         $this->page = $page;
-        $this->pageConfig = $pageConfig;
-        $this->processor = $processor;
     }
 
     /**
@@ -27,58 +22,21 @@ class PageController extends \BaseController
      */
     public function showPage($pageName = 'index')
     {
-        $ds = DIRECTORY_SEPARATOR;
+        if (!$this->page->exists($pageName)) {
+            return \Response::view($this->theme.'.404', array('global' => $this->global), 404);
+        }
 
-        $fullPagePath = app_path().$ds.'lablog'.$ds.$pageName.'.page';
+        $page = $this->page->get($pageName);
 
-        if ($this->page->exists($fullPagePath)) {
-            $pageContent = $this->page->get($fullPagePath);
+        $viewParamaters = array(
+            'global' => $this->global,
+            'page' => $page
+        );
 
-            $configWrap = \Config::get('lablog::page.configWrap') ?: '{POSTCONFIG}';
-
-            $pageContent = $this->pageConfig->strip($pageContent, $configWrap);
-
-            $config = $this->pageConfig->decode($pageContent['config']);
-
-            if (isset($config->title)) {
-                $name = $config->title;
-            } else {
-                $name = $pageName;
-            }
-
-            if (isset($config->content)) {
-                $content = $config->content;
-            } else {
-                $content = $pageContent['content'];
-            }
-
-            if (isset($config->modified)) {
-                $modified = $config->modified;
-            } else {
-                $modified = $this->page->modified($fullPagePath);
-            }
-
-            $page = new Page;
-            $page->name = $name;
-            $page->modified = $modified;
-            $page->content = $this->processor->process($content);
-            $page->path = $fullPagePath;
-
-            $template = \Config::get('lablog::theme');
-            $extra = \Config::get('lablog::global');
-
-            $templateFile = $pageName == 'index' ? 'home' : 'page';
-
-            return \View::make($template.'.'.$templateFile, array(
-                'page' => $page,
-                'config' => $config,
-                'global' => $extra
-            ));
-
+        if (\View::exists($this->theme.'.'.$pageName)) {
+            return \View::make($this->theme.'.'.$pageName, $viewParamaters);
         } else {
-            $extra = \Config::get('lablog::extra.page');
-            $message = isset($extra['notFound']) ? $extra['notFound'] : 'Page not found.';
-            return \App::abort(404, $message);
+            return \View::make($this->theme.'.page', $viewParamaters);
         }
     }
 }

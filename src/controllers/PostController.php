@@ -11,15 +11,12 @@ use Stringy\StringyStatic as Stringy;
 
 class PostController extends \BaseController
 {
-    public function __construct(
-        PostGatewayInterface $post,
-        PostConfigGatewayInterface $postConfig,
-        ProcessorInterface $processor,
-        CategoryGatewayInterface $category)
+    public function __construct(PostGatewayInterface $post, CategoryGatewayInterface $category)
     {
+        $this->theme = \Config::get('lablog::theme');
+        $this->global = \Config::get('lablog::global');
+
         $this->post = $post;
-        $this->postConfig = $postConfig;
-        $this->processor = $processor;
         $this->category = $category;
     }
 
@@ -31,14 +28,12 @@ class PostController extends \BaseController
     {
         $posts = $this->post->findAll();
 
-        $theme = \Config::get('lablog::theme');
-        $extra = \Config::get('lablog::global');
+        $viewParamaters = array(
+            'global' => $this->global,
+            'posts' => $posts
+        );
 
-        return \View::make($theme.'.posts', array(
-            'posts' => $posts,
-            'pageNumber' => $pagenumber,
-            'global' => $extra
-        ));
+        return \View::make($this->theme.'.posts', $viewParamaters);
     }
 
     /**
@@ -48,33 +43,18 @@ class PostController extends \BaseController
      */
     public function showPost($category, $postName)
     {
-        $ds = DIRECTORY_SEPARATOR;
-        $postPath = str_replace('/', $ds, $category.'/'.$postName);
-
-        $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
+        if (!$this->post->exists($category, $postName)) {
+            return \Response::view($this->theme.'.404', array('global' => $this->global), 404);
+        }
 
         $post = $this->post->getPost($category, $postName);
+        $category = $this->category->getCategory($category);
 
-        if ($post) {
+        $viewParamaters = array(
+            'post' => $post,
+            'global' => $this->global
+        );
 
-            $fullCategory = $this->category->getCategory($category);
-
-            $template = \Config::get('lablog::theme');
-            $extra = \Config::get('lablog::global');
-
-            return \View::make($template.'.post', array(
-                'post' => $post,
-                'global' => $extra,
-                'category' => $fullCategory
-            ));
-
-        } else {
-            $template = \Config::get('lablog::theme');
-            $global = \Config::get('lablog::global');
-            return \Response::view($template.'.404', array(
-                'global' => $global,
-                'error_message' => 'Sorry, the Post could not be found.'
-            ), 200);
-        }
+        return \View::make($this->theme.'.post', $viewParamaters);
     }
 }

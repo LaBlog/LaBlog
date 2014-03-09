@@ -26,6 +26,7 @@ class PostLoader extends Twig_Extension
         return array(
             'getAllPosts' => new Twig_Function_Method($this, 'getAllPosts'),
             'getPost' => new Twig_Function_Method($this, 'getPost'),
+            'getCategoryPosts' => new Twig_Function_Method($this, 'getCategoryPosts')
         );
     }
 
@@ -37,5 +38,10 @@ class PostLoader extends Twig_Extension
     public function getPost($category, $post)
     {
         return $this->post->getPost($category, $post);
+    }
+
+    public function getCategoryPosts($category)
+    {
+        return $this->post->getAll($category);
     }
 }

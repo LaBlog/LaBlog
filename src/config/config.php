@@ -5,7 +5,9 @@ return array(
     /**
      * Register the prefix for the LaBlog system.
      * Default: '/' (Eg. domain.com will go to your blog home.)
-     * Example: '/blog' (Eg. domain.com/blog will go to your blog home.)
+     * Example: '/blog/' (Eg. domain.com/blog will go to your blog home.)
+     *
+     * Please remember to keep a slash at the end of the prefix!
      */
     'prefix' => '/',
 

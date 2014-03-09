@@ -8,5 +8,6 @@ class Page
     public $modified;
     public $content;
     public $config;
-    public $path;
+    public $slug;
+    public $url;
 }

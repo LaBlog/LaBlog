@@ -18,8 +18,11 @@ class FileCategory implements CategoryGatewayInterface
      * @param  string $path
      * @return boolean
      */
-    public function exists($path)
+    public function exists($category)
     {
+        $ds = DIRECTORY_SEPARATOR;
+        $path = app_path().$ds.'lablog'.$ds.$category;
+
         if ($this->fs->isDirectory($path)) {
             return true;
         }
@@ -41,7 +44,7 @@ class FileCategory implements CategoryGatewayInterface
 
         $path = $basePath.$categoryPath;
 
-        if (!$this->exists($path)) {
+        if (!$this->exists($category)) {
             return array();
         }
 
@@ -69,36 +72,20 @@ class FileCategory implements CategoryGatewayInterface
 
         $path = app_path().$ds.'lablog'.$ds.$categoryPath;
 
-        if (!$this->exists($path)) {
+        if (!$this->exists($category)) {
             return (object) array();
         }
-
-        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
 
         $categoryExplode = explode('/', $category);
         $categoryName = end($categoryExplode);
 
-        $categoryCount = count($categoryExplode);
-
-        if ($categoryCount > 1) {
-            $parent = $categoryExplode[$categoryCount-2];
-            $categoryPathExplode = explode($parent, $category);
-            $categoryPath = $categoryPathExplode[0].'/'.$parent;
-            $link = $linkPrefix.'/category'.$categoryPath;
-            $parentCategory = new Category;
-            $parentCategory->name = $parent;
-            $parentCategory->url = \URL::to($link);
-            $parentCategory->link = $categoryPath;
-        } else {
-            $parentCategory = '';
-        }
+        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
 
         $baseCategory = $category;
         $categoryLink = $linkPrefix.'/category/'.$category;
         $fullCategory = $category;
 
         $category = new Category;
-        $category->parent = $parentCategory;
         $category->name = $categoryName;
         $category->link = $baseCategory;
         $category->url = \URL::to($categoryLink);
@@ -106,80 +93,27 @@ class FileCategory implements CategoryGatewayInterface
         return $category;
     }
 
-    /**
-     * Get all of the posts in a category.
-     * @param  string $category
-     * @return array
-     */
-    public function getCategoryPosts($category)
+    public function getParentCategory($category)
     {
-        $ds = DIRECTORY_SEPARATOR;
-        $categoryPath = str_replace('/', $ds, $category);
-
-        $path = app_path().$ds.'lablog'.$ds.$categoryPath;
-
-        if (!$this->exists($path)) {
-            return array();
+        if (!$this->exists($category)) {
+            return (object) array();
         }
 
-        $posts = $this->fs->files($path);
+        $categoryExplode = explode('/', $category);
 
-        $allPosts = array();
+        $categoryCount = count($categoryExplode);
 
-        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
+        if ($categoryCount > 1) {
+            array_pop($categoryExplode);
 
-        foreach ($posts as $post) {
-            if (strpos('.post', $post) === false) {
-                continue;
-            }
-            $explodePath = explode('/', $post);
-            $postName = str_replace('.post', '', end($explodePath));
+            $parentCategory = implode('/', $categoryExplode);
 
-            $link = $linkPrefix.'/post/'.$category.'/'.$postName;
-            $allPosts[] = array(
-                'name' => $postName,
-                'url' => \URL::to($link),
-                'link' => $category.'/'.$postName
-            );
+            $parent = $this->getCategory($parentCategory);
+
+        } else {
+            $parent = '';
         }
 
-        return $allPosts;
-    }
-
-    /**
-     * Get all posts in a category, including sub categories.
-     * @param  string $category
-     * @return array
-     */
-    public function getAllCategoryPosts($category)
-    {
-        $ds = DIRECTORY_SEPARATOR;
-        $categoryPath = str_replace('/', $ds, $category);
-
-        $path = app_path().$ds.'lablog'.$ds.$categoryPath;
-
-        if (!$this->exists($path)) {
-            return array();
-        }
-
-        $posts = $this->fs->allFiles($path);
-
-        $allPosts = array();
-
-        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
-
-        foreach ($posts as $post) {
-            $explodePath = explode('/', $post);
-            $postName = str_replace('.post', '', end($explodePath));
-
-            $link = $linkPrefix.'/post/'.$category.'/'.$postName;
-            $allPosts[] = array(
-                'name' => $postName,
-                'url' => \URL::to($link),
-                'link' => $category.'/'.$postName
-            );
-        }
-
-        return $allPosts;
+        return $parent;
     }
 }

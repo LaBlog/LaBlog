@@ -25,70 +25,71 @@ class FilePost implements PostGatewayInterface
      * @param  string $path
      * @return boolean
      */
-    public function exists($path)
+    public function exists($category, $post)
     {
-        if ($this->fs->exists($path)) {
+        $ds = DIRECTORY_SEPARATOR;
+        $postPath = str_replace('/', $ds, $category.$ds.$post);
+
+        $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
+
+        if ($this->fs->exists($fullPostPath)) {
             return true;
         }
 
         return false;
     }
 
-    /**
-     * Get the full contents of a post.
-     * @param  string $path
-     * @return string
-     */
-    public function get($path)
-    {
-        return $this->fs->get($path);
-    }
-
     public function getPost($category, $postName)
     {
         $ds = DIRECTORY_SEPARATOR;
-        $postPath = str_replace('/', $ds, $category.'/'.$postName);
+        $postPath = str_replace('/', $ds, $category.$ds.$postName);
 
         $fullPostPath = app_path().$ds.'lablog'.$ds.$postPath.'.post';
 
-        if ($this->exists($fullPostPath)) {
-            $postContent = $this->get($fullPostPath);
-
-            $configWrap = \Config::get('lablog::post.configWrap') ?: '{POSTCONFIG}';
-
-            $postContent = $this->config->strip($postContent, $configWrap);
-
-            $config = $this->config->decode($postContent['config']);
-
-            if (isset($config->title)) {
-                $name = $config->title;
-            } else {
-                $name = $postName;
-            }
-
-            if (isset($config->content)) {
-                $content = $config->content;
-            } else {
-                $content = $postContent['content'];
-            }
-
-            if (isset($config->modified)) {
-                $modified = $config->modified;
-            } else {
-                $modified = $this->modified($fullPostPath);
-            }
-
-            $post = new Post;
-            $post->name = $name;
-            $post->modified = $modified;
-            $post->content = $this->processor->process($content);
-            $post->path = $fullPostPath;
-            $post->config = $config;
-
-            return $post;
-        } else {
+        if (!$this->exists($category, $postName)) {
             return false;
         }
+
+        $postContent = $this->fs->get($fullPostPath);
+
+        $configWrap = \Config::get('lablog::post.configWrap') ?: '{POSTCONFIG}';
+
+        $postContent = $this->config->strip($postContent, $configWrap);
+
+        $config = $this->config->decode($postContent['config']);
+
+        if (isset($config->title)) {
+            $name = $config->title;
+        } else {
+            $name = $postName;
+        }
+
+        if (isset($config->content)) {
+            $content = $config->content;
+        } else {
+            $content = $postContent['content'];
+        }
+
+        if (isset($config->modified)) {
+            $modified = $config->modified;
+        } else {
+            $modified = $this->modified($fullPostPath);
+        }
+
+        $linkPrefix = \Config::get('lablog::prefix');
+
+        $url = $linkPrefix.'post/'.$category.'/'.$postName;
+
+        $post = new Post;
+        $post->name = $name;
+        $post->modified = $modified;
+        $post->url = \URL::to($url);
+        $post->category = $category;
+        $post->content = $this->processor->process($content);
+        $post->link = $category.'/'.$postName;
+        $post->config = $config;
+
+        return $post;
     }
 
     /**
@@ -106,54 +107,66 @@ class FilePost implements PostGatewayInterface
      * @param  string $path
      * @return string
      */
-    public function getAll($path)
-    {
-        return $this->fs->files($path);
-    }
-
-    public function findAll()
+    public function getAll($category)
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $path = app_path().$ds.'lablog/';
+        $category = $path;
 
-        $posts = $this->fs->allFiles($path);
+        $category = str_replace('/', $ds, $category);
 
-        $linkPrefix = \Config::get('lablog::prefix') == '/' ? '' : \Config::get('lablog::prefix');
+        $path = app_path().$ds.'lablog'.$ds.$category;
+
+        $posts = $this->fs->files($path);
 
         foreach ($posts as $post) {
             if (strpos($post, '.post') === false) {
                 continue;
             }
             $postPath = str_replace('.post', '', $post);
-            $allPosts[] = str_replace($path, '', $postPath);
+            $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
         }
+
+        asort($allPosts);
 
         $posts = array();
 
         foreach ($allPosts as $post) {
-            $explodePath = explode('/', $post);
-            $postName = end($explodePath);
+            $categoryExplode = explode($ds, $post);
+            $post = array_pop($categoryExplode);
+            $posts[] = $this->getPost($category, $post);
+        }
 
-            $category = $explodePath[count($explodePath) - 2];
+        return $posts;
+    }
 
-            $path = $post;
-            $categoryPath = str_replace($postName, '', $path);
+    public function findAll($path = '')
+    {
+        $ds = DIRECTORY_SEPARATOR;
 
-            $link = $linkPrefix.'/post/'.$path;
-            $categoryLink = $linkPrefix.'/category/'.$categoryPath;
+        $basePath = app_path().$ds.'lablog'.$ds;
 
-            $postDetails = new Post;
-            $postDetails->name = $postName;
-            $postDetails->url = \URL::to($link);
-            $postDetails->link = $link;
-            $postDetails->category = array(
-                'name' => $category,
-                'url' => \URL::to($categoryLink),
-                'link' => $categoryPath
-            );
+        $path = app_path().$ds.'lablog'.$ds.$path;
 
-            $posts[] = $postDetails;
+        $posts = $this->fs->allFiles($path);
+
+        foreach ($posts as $post) {
+            if (strpos($post, '.post') === false) {
+                continue;
+            }
+            $postPath = str_replace('.post', '', $post);
+            $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
+        }
+
+        asort($allPosts);
+
+        $posts = array();
+
+        foreach ($allPosts as $post) {
+            $categoryExplode = explode('/', $post);
+            $post = array_pop($categoryExplode);
+            $category = str_replace($basePath, '', implode('/', $categoryExplode));
+            $posts[] = $this->getPost($category, $post);
         }
 
         return $posts;

@@ -11,37 +11,25 @@ class CategoryController extends \BaseController
 
     public function __construct(
         PostGatewayInterface $post,
-        \Illuminate\Filesystem\Filesystem $fs,
         CategoryGatewayInterface $category)
     {
+        $this->theme = \Config::get('lablog::theme');
+        $this->global = \Config::get('lablog::global');
+
         $this->post = $post;
-        $this->fs = $fs;
         $this->category = $category;
     }
 
     public function showCategories()
     {
-        $subCategories = $this->category->getSubCategories('');
-        foreach ($subCategories as $blogCategory) {
-            $category = $this->category->getCategory($blogCategory->link);
-            $category->posts = $this->category->getCategoryPosts($blogCategory->link);
-        }
+        $categories = $this->category->getSubCategories('');
 
-        $theme = \Config::get('lablog::theme');
-        $global = \Config::get('lablog::global');
+        $viewParamaters = array(
+            'global' => $this->global,
+            'categories' => $categories
+        );
 
-        if (!isset($category->name)) {
-            return \Response::view($theme.'.404', array(
-                'global' => $global,
-                'error_message' => 'Sorry, the Category could not be found.'
-            ), 200);
-        }
-
-        return \View::make($theme.'.category', array(
-            'category' => $category,
-            'subCategories' => $subCategories,
-            'global' => $global
-        ));
+        return \View::make($this->theme.'.categories', $viewParamaters);
     }
 
     /**
@@ -51,26 +39,24 @@ class CategoryController extends \BaseController
      */
     public function showCategory($category, $pagenumber = 1)
     {
-        $fullCategory = $category;
-        $subCategories = $this->category->getSubCategories($category);
-        $category = $this->category->getCategory($category);
-        $category->posts = $this->category->getCategoryPosts($fullCategory);
-
-        $theme = \Config::get('lablog::theme');
-        $global = \Config::get('lablog::global');
-
-        if (!isset($category->name)) {
-            return \Response::view($theme.'.404', array(
-                'global' => $global,
-                'error_message' => 'Sorry, the Category could not be found.'
-            ), 200);
+        if (!$this->category->exists($category)) {
+            return \Response::view($this->theme.'.404', array('global' => $this->global), 404);
         }
 
-        return \View::make($theme.'.category', array(
-            'category' => $category,
+        $categoryObject = $this->category->getCategory($category);
+        $parent = $this->category->getParentCategory($category);
+        $subCategories = $this->category->getSubCategories($category);
+        $posts = $this->post->getAll($category);
+
+        $viewParamaters = array(
+            'global' => $this->global,
+            'category' => $categoryObject,
+            'parent' => $parent,
             'subCategories' => $subCategories,
-            'pageNumber' => $pagenumber,
-            'global' => $global
-        ));
+            'posts' => $posts,
+            'pageNumber' => $pagenumber
+        );
+
+        return \View::make($this->theme.'.category', $viewParamaters);
     }
 }
