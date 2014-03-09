@@ -152,6 +152,8 @@ class FilePost implements PostGatewayInterface
 
         $posts = $this->fs->allFiles($path);
 
+        $allPosts = array();
+
         foreach ($posts as $post) {
             if (strpos($post, '.post') === false) {
                 continue;
