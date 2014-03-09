@@ -1,0 +1,19 @@
+.main-navigation {
+    width: 100%;
+    background-color: #f5f5f5;
+    text-align: center;
+
+    a {
+        padding: em(10) em(10) em(10);
+        display: inline-block;
+        text-decoration: none;
+        color: #404040;
+        @include box-sizing(border-box);
+        @include transition(all 200ms linear);
+
+        &:hover {
+            background-color: #404040;
+            color: #fff;
+        }
+    }
+}

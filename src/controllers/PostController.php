@@ -30,7 +30,8 @@ class PostController extends \BaseController
 
         $viewParamaters = array(
             'global' => $this->global,
-            'posts' => $posts
+            'posts' => $posts,
+            'pageNumber' => $pagenumber
         );
 
         return \View::make($this->theme.'.posts', $viewParamaters);
@@ -52,7 +53,8 @@ class PostController extends \BaseController
 
         $viewParamaters = array(
             'post' => $post,
-            'global' => $this->global
+            'global' => $this->global,
+            'category' => $category
         );
 
         return \View::make($this->theme.'.post', $viewParamaters);

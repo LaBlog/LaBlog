@@ -1,5 +1,10 @@
 {% extends 'lablog::lablog.default.layout.master' %}
 
 {% block content %}
-    {{ post.content }}
+    <div class="category-link">
+        Category >> <a href="{{ category.url }}">{{ category.name | title }}</a>
+    </div>
+    <article class="post">
+        {{ post.content }}
+    </article>
 {% endblock %}

@@ -17,7 +17,8 @@ class PaginationLoader extends Twig_Extension
     public function getFilters()
     {
         return array(
-            'paginate' => new Twig_Filter_Method($this, 'paginate')
+            'paginate' => new Twig_Filter_Method($this, 'paginate'),
+            'paginationPages' => new Twig_Filter_Method($this, 'paginationPages')
         );
     }
 
@@ -29,5 +30,10 @@ class PaginationLoader extends Twig_Extension
         $result = array_slice($content, $offset, $length);
 
         return $result;
+    }
+
+    public function paginationPages(array $content, $perPage)
+    {
+        return count($content) / $perPage;
     }
 }

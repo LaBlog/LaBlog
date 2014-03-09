@@ -1,0 +1,41 @@
+body {
+    font-family: "Roboto", "Arial", sans-serif;
+    font-size: em(14);
+}
+
+blockquote {
+    border-left: 10px solid #ccc;
+    margin: em(16) em(5);
+    padding: em(12);
+    font-style: italic;
+}
+
+h1 {
+    font-size: em(22);
+    font-weight: bold;
+    margin-bottom: em(10);
+}
+
+h2 {
+    font-size: em(18);
+    font-weight: bold;
+    margin-bottom: em(10);
+}
+
+p {
+    margin-bottom: em(10);
+}
+
+a {
+    color: #404040;
+    text-decoration: none;
+    @include transition(all 200ms linear);
+
+    &:hover {
+        color: #cccccc;
+    }
+
+    &.readmore {
+        font-weight: bold;
+    }
+}

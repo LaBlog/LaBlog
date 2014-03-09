@@ -1,0 +1,21 @@
+{% extends 'lablog::lablog.default.layout.master' %}
+
+{% block content %}
+    <h1>Categories</h1>
+    <div class="category-list">
+        {% for category in categories %}
+            {% set posts = getCategoryPosts(category.link) | count %}
+            {% set subCategories = getSubCategories(category.link) | count %}
+            <a href="{{ category.url }}">
+                {{ category.name | title }}
+                <span class="posts">
+                    {{ posts }}
+                    {% if posts < 2 and posts > 0 %} Post {% else %} Posts {% endif %}
+                    and
+                    {{ subCategories }}
+                    {% if subCategories < 2 and subCategories > 0 %} Category {% else %} Categories {% endif %}
+                </span>
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,6 +1,8 @@
 <?php
 
 namespace Lablog\Lablog\Post;
+use Illuminate\Filesystem\Filesystem;
+use Lablog\Lablog\Processor\ProcessorInterface;
 
 class FilePost implements PostGatewayInterface
 {
@@ -11,9 +13,9 @@ class FilePost implements PostGatewayInterface
      * @param IlluminateFilesystemFilesystem $fs
      */
     public function __construct(
-        \Illuminate\Filesystem\Filesystem $fs,
+        Filesystem $fs,
         PostConfigGatewayInterface $config,
-        \Lablog\Lablog\Processor\ProcessorInterface $processor)
+        ProcessorInterface $processor)
     {
         $this->fs = $fs;
         $this->config = $config;
@@ -78,7 +80,7 @@ class FilePost implements PostGatewayInterface
 
         $linkPrefix = \Config::get('lablog::prefix');
 
-        $url = $linkPrefix.'post/'.$category.'/'.$postName;
+        $url = $linkPrefix.$category.'/'.$postName;
 
         $post = new Post;
         $post->name = $name;
@@ -111,13 +113,13 @@ class FilePost implements PostGatewayInterface
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $category = $path;
-
         $category = str_replace('/', $ds, $category);
 
         $path = app_path().$ds.'lablog'.$ds.$category;
 
         $posts = $this->fs->files($path);
+
+        $allPosts = array();
 
         foreach ($posts as $post) {
             if (strpos($post, '.post') === false) {
@@ -127,7 +129,7 @@ class FilePost implements PostGatewayInterface
             $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
         }
 
-        asort($allPosts);
+        arsort($allPosts);
 
         $posts = array();
 
@@ -158,7 +160,7 @@ class FilePost implements PostGatewayInterface
             $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
         }
 
-        asort($allPosts);
+        arsort($allPosts);
 
         $posts = array();
 

@@ -1,5 +1,56 @@
 {% extends 'lablog::lablog.default.layout.master' %}
 
+{% set perPage = 10 %}
+{% set totalPages = posts | paginationPages(perPage) %}
+
 {% block content %}
-    
+    <div class="category-list">
+        {% for subCategory in subCategories %}
+            {% set subCategoryPosts = getCategoryPosts(subCategory.link) | count %}
+            {% set subCategorySubCategories = getSubCategories(subCategory.link) | count %}
+            <a href="{{ subCategory.url }}">
+                {{ subCategory.name | title }}
+                <span class="posts">
+                    {{ subCategoryPosts }}
+                    {% if subCategoryPosts < 2 and subCategoryPosts > 0 %} Post {% else %} Posts {% endif %}
+                    and
+                    {{ subCategorySubCategories }}
+                    {% if subCategorySubCategories < 2 and subCategorySubCategories > 0 %} Category {% else %} Categories {% endif %}
+                </span>
+            </a>
+        {% endfor %}
+    </div>
+
+    {% for post in posts | paginate(pageNumber, perPage) %}
+        <article class="post-list-item">
+            <header>
+                <h3 class="post-date">{{ post.modified | date('F j, Y') }}</h3>
+                <h1 class="post-title"><a href="{{ post.url }}">{{ post.name | title }}</a></h1>
+            </header>
+            <section>
+                {{ post.config.description }}
+            </section>
+            <footer>
+                <a class="readmore" href="{{ post.url }}">Read more &hellip;</a>
+            </footer>
+        </article>
+    {% endfor %}
+
+    {% if posts | count > perPage %}
+        <div class="pagination">
+            {% if pageNumber > 2 %}
+                <a href="{{ category.url }}/page/{{ pageNumber - 2 }}">{{ pageNumber - 2 }}</a>
+            {% endif %}
+            {% if pageNumber > 1 %}
+                <a href="{{ category.url }}/page/{{ pageNumber - 1 }}">{{ pageNumber - 1 }}</a>
+            {% endif %}
+            <a class="current" href="{{ categoru.url }}/page/{{ pageNumber }}">{{ pageNumber }}</a>
+            {% if pageNumber + 1 <= totalPages %}
+                <a href="{{ category.url}}/page/{{ pageNumber + 1 }}">{{ pageNumber + 1 }}</a>
+            {% endif %}
+            {% if pageNumber + 2 <= totalPages %}
+                <a href="{{ category.url}}/page/{{ pageNumber + 2 }}">{{ pageNumber + 2 }}</a>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

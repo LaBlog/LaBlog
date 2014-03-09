@@ -16,11 +16,12 @@
     {# Load stylesheets #}
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ assets }}/css/screen.css"></link>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,400italic,300,300italic' rel='stylesheet' type='text/css'>
     {% endblock %}
 
     {# Load header scripts #}
     {% block header_scripts %}
-        <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,400italic,300,300italic' rel='stylesheet' type='text/css'>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/r29/html5.js"></script>
     {% endblock %}
 </head>
 <body>

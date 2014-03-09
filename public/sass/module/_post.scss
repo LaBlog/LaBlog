@@ -1,0 +1,49 @@
+article.post-list-item {
+    margin-bottom: em(10);
+    padding-bottom: em(10);
+    border-bottom: 1px dotted #f5f5f5;
+
+    header {
+        h1 {
+            text-align: center;
+            a {
+                color: #404040;
+                text-decoration: none;
+
+                &:hover {
+                    color: #404040;
+                }
+            }
+        }
+        h3 {
+            color: #c5c5c5;
+            text-align: center;
+            padding-top: em(10);
+            padding-bottom: em(10);
+        }
+    }
+    section {
+        text-align: center;
+    }
+    footer {
+        text-align: center;
+        padding-top: em(10);
+    }
+}
+
+article.post {
+    padding-top: em(10);
+    padding-bottom: em(10);
+}
+
+.category-link {
+    color: #bbb;
+
+    a {
+        color: #999;
+
+        &:hover {
+            color: #555;
+        }
+    }
+}
