@@ -129,7 +129,7 @@ class FilePost implements PostGatewayInterface
             $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
         }
 
-        asort($allPosts);
+        krsort($allPosts);
 
         $posts = array();
 
@@ -162,7 +162,7 @@ class FilePost implements PostGatewayInterface
             $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
         }
 
-        asort($allPosts);
+        krsort($allPosts);
 
         $posts = array();
 
