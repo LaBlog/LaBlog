@@ -5,7 +5,7 @@ return array(
      * Register the processor binding.
      * Default: 'Lablog\Lablog\Processor\MarkdownProcessor'
      */
-    'Lablog\Lablog\Processor\ProcessorInterface' => 'Lablog\Markdown\MarkdownProcessor',
+    'Lablog\Lablog\Processor\ProcessorInterface' => 'Lablog\Lablog\Processor\MarkdownProcessor',
 
     /**
      * Register the page type binding.
