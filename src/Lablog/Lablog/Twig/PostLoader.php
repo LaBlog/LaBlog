@@ -26,7 +26,8 @@ class PostLoader extends Twig_Extension
         return array(
             'getAllPosts' => new Twig_Function_Method($this, 'getAllPosts'),
             'getPost' => new Twig_Function_Method($this, 'getPost'),
-            'getCategoryPosts' => new Twig_Function_Method($this, 'getCategoryPosts')
+            'getCategoryPosts' => new Twig_Function_Method($this, 'getCategoryPosts'),
+            'getRecursiveCategoryPosts' => new Twig_Function_Method($this, 'getRecursiveCategoryPosts'),
         );
     }
 
@@ -43,5 +44,10 @@ class PostLoader extends Twig_Extension
     public function getCategoryPosts($category)
     {
         return $this->post->getAll($category);
+    }
+
+    public function getRecursiveCategoryPosts($category)
+    {
+        return $this->post->findAll($category);
     }
 }
