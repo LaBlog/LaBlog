@@ -142,13 +142,13 @@ class FilePost implements PostGatewayInterface
         return $posts;
     }
 
-    public function findAll($path = '')
+    public function findAll($category = '')
     {
         $ds = DIRECTORY_SEPARATOR;
 
         $basePath = app_path().$ds.'lablog'.$ds;
 
-        $path = app_path().$ds.'lablog'.$ds.$path;
+        $path = app_path().$ds.'lablog'.$ds.$category;
 
         $posts = $this->fs->allFiles($path);
 
@@ -159,7 +159,7 @@ class FilePost implements PostGatewayInterface
                 continue;
             }
             $postPath = str_replace('.post', '', $post);
-            $allPosts[$this->modified($post).rand()] = str_replace($path, '', $postPath);
+            $allPosts[$this->modified($post).rand()] = str_replace($path, $category, $postPath);
         }
 
         krsort($allPosts);
